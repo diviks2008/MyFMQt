@@ -1,0 +1,5 @@
+.showme
+.data
+.thumbnails
+Antox
+CD_card
