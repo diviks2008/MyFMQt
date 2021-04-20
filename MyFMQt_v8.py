@@ -11,6 +11,7 @@ import shutil
 import hashlib
 import random
 import locale
+import re
 
 from PyQt5.QtWidgets import QApplication, QTreeView, QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton, QFileDialog, QAbstractItemView, QStyle, QTextEdit, QMenu, QAction, QMessageBox, QInputDialog, QLabel, QProgressDialog
 from PyQt5.QtCore import Qt, QItemSelectionModel, QFileInfo
@@ -880,19 +881,42 @@ class MyFMQt(QWidget):
             return ''
 
     def rnd_str(self):
-        len_name, ok = QInputDialog.getInt(self.treeView, 'Create name rnd', 'Default len str 21\nLen str?', value=21, min=4, max=1024)
+        len_name_min = 9
+        len_name_default = 55
+        number_list = [str(n) for n in range(0, 10, 1)]
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        alphabet_upper = alphabet.upper()
+        numbers = ''.join(number_list)
+        # alphabet_dop = '~!@#$%^&*()_-=+{}[]<>?,.'
+        alphabet_dop = '~!@#$&_'
+        alphabet += alphabet_upper + numbers + alphabet_dop
+
+        len_name, ok = QInputDialog.getInt(self.treeView, 'Create name rnd', 'Len str?', value=len_name_default, min=4, max=1024)
         if not ok:
             return
-        alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        # alphabet_dop = '~!@#$%^&*()_-=+{}[]<>?,.'
-        alphabet_dop = '~!@#$_-?'
-        alphabet += alphabet_dop
-        # while True:
-        random_name = ''.join(random.choice(alphabet) for i in range(len_name))
-            # if (any(c.islower() for c in random_name)
-            #         and any(c.isupper() for c in random_name)
-            #         and sum(c.isdigit() for c in random_name) >= 3):
-            #     break
+
+        def check_valid(my_pswd):
+            if not re.search('[a-z]', my_pswd):
+                return 0
+            elif not re.search('[A-Z]', my_pswd):
+                return 0
+            elif not re.search('[0-9]', my_pswd):
+                return 0
+            elif not re.search('[_@$#]', my_pswd):
+                return 0
+            elif re.search('[\s]', my_pswd):
+                return 0
+            else:
+                return 1
+
+        if len_name < len_name_min:
+            return
+
+        while True:
+            random_name = ''.join(random.choice(alphabet) for i in range(len_name))
+            if check_valid(random_name) and random_name[0] not in number_list and random_name[0] not in alphabet_dop:
+                break
+
         self.text_edit.clear()
         self.text_edit.setText(random_name)
 
