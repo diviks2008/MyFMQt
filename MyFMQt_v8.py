@@ -301,8 +301,8 @@ class MyFMQt(QWidget):
             try:
                 lines = []
                 files_all = [os.path.join(file_path, f) for f in os.listdir(file_path)]
-                [lines.append('[{}]'.format(os.path.basename(d))) for d in sorted(files_all) if os.path.isdir(d)]
-                [lines.append('{}'.format(os.path.basename(f))) for f in sorted(files_all) if os.path.isfile(f)]
+                [lines.append('[{}]'.format(os.path.basename(d))) for d in sorted(files_all, key=self.sort_by_name) if os.path.isdir(d)]
+                [lines.append('{}'.format(os.path.basename(f))) for f in sorted(files_all, key=self.sort_by_name) if os.path.isfile(f)]
                 self.text_edit.setText('\n'.join(lines))
             except:
                 return
